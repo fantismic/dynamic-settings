@@ -1,0 +1,35 @@
+{
+    "name": "fantismic/dynamic-settings",
+    "version": "1.0.0",
+    "description": "This package creates custom dynamic settings controlled by the user.",
+    "license": "MIT",
+    "keywords": [
+        "dynamic-settings",
+        "dynamic",
+        "settings",
+        "blade components",
+        "laravel components",
+        "livewire components"
+    ],
+    "require": {
+        "php": "^8.2",
+        "spatie/laravel-collection-macros": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fantismic\\DynSettings\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fantismic"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fantismic\\DynSettings\\Providers\\DynSettingsProvider"
+            ]
+        }
+    }
+}
