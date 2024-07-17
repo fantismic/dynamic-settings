@@ -5,6 +5,7 @@ namespace Fantismic\DynSettings\Providers;
 use Livewire\Livewire;
 use Fantismic\DynSettings\DynSettings;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 use Fantismic\DynSettings\Livewire\DynamicSettingsComponent;
 
 class DynSettingsProvider extends ServiceProvider
@@ -43,6 +44,8 @@ class DynSettingsProvider extends ServiceProvider
             return new DynSettings();
         });
 
-        Livewire::component('DynamicSettings', DynamicSettingsComponent::class);
+        $this->callAfterResolving(BladeCompiler::class, function () {
+          Livewire::component('DynamicSettings', DynamicSettingsComponent::class);
+        });
     }
 }

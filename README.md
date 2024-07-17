@@ -1,9 +1,9 @@
 # Dynamic Settings
 
-[![Latest Stable Version](https://poser.pugx.org/Fantismic/dynamic-settings/v)](https://packagist.org/packages/Fantismic/dynamic-settings) 
-[![Total Downloads](https://poser.pugx.org/Fantismic/dynamic-settings/downloads)](https://packagist.org/packages/Fantismic/dynamic-settings) 
-[![Latest Unstable Version](https://poser.pugx.org/Fantismic/dynamic-settings/v/unstable)](https://packagist.org/packages/Fantismic/dynamic-settings) 
-[![PHP Version Require](https://poser.pugx.org/Fantismic/dynamic-settings/require/php)](https://packagist.org/packages/Fantismic/dynamic-settings)
+[![Latest Stable Version](https://poser.pugx.org/fantismic/dynamic-settings/v)](https://packagist.org/packages/fantismic/dynamic-settings) 
+[![Total Downloads](https://poser.pugx.org/fantismic/dynamic-settings/downloads)](https://packagist.org/packages/fantismic/dynamic-settings) 
+[![Latest Unstable Version](https://poser.pugx.org/fantismic/dynamic-settings/v/unstable)](https://packagist.org/packages/fantismic/dynamic-settings) 
+[![PHP Version Require](https://poser.pugx.org/fantismic/dynamic-settings/require/php)](https://packagist.org/packages/fantismic/dynamic-settings)
 
 
 Dynamic Settings is a Laravel / Livewire package that allows you to manage custom settings of your application dynamically.
