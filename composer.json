@@ -1,6 +1,6 @@
 {
     "name": "fantismic/dynamic-settings",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "This package creates custom dynamic settings controlled by the user.",
     "license": "MIT",
     "keywords": [

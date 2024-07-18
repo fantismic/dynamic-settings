@@ -36,4 +36,16 @@ return [
     |
     */
     'layout_path' => null,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    |   Alert array format
+    |--------------------------------------------------------------------------
+    |
+    | When setting is array type the built-in component expects values ​​to be comma separated
+    | If true, a message will be preppend to the setting description in the views
+    |
+    */
+    'alert_array_format' => true
 ];
