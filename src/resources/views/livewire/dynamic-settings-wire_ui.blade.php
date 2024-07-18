@@ -1,5 +1,5 @@
 <section>
-  <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg ">
+  <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg ">
     {{-- Header --}}
     <div class="p-1 flex justify-between">
       {{-- Header title --}}
@@ -39,18 +39,18 @@
     {{-- Body --}}
     @foreach ($groups as $name => $group)
       {{-- Card body --}}
-      <div class="bg-slate-100 dark:bg-gray-700 rounded-lg pb-1 mb-3">
+      <div class="bg-slate-100 dark:bg-gray-700 rounded-lg">
 
         {{-- Card Content --}}
         <x-card title="{{ucFirst($name)}}">
           @foreach ($group as $name => $settings)
             {{-- Assoc card --}}
-            <x-card title="{{ucFirst($name)}}" class="border p-3 dark:border-gray-600">
+            <x-card title="{{ucFirst($name)}}" class="border p-1 mb-4 dark:border-gray-600">
               {{-- Setting item --}}
               <div class="space-y-4">
                 @foreach ($settings as $setting)
                   {{-- Setting item 1 --}}
-                  <div class="flex space-x-10 m-3">
+                  <div class="flex space-x-10">
                     {{-- Setting first column  --}}
                     <div class="w-1/2">
                       @switch($setting['type'])
@@ -65,11 +65,12 @@
                           <x-toggle lg label="{{$setting['name']}}" wire:model.live="settingsArr.{{$setting['key']}}" />
                           @break                               
                       @endswitch
+                      <div class="text-sm italic mt-1">{{$setting['key']}}</div>
                     {{-- End setting first column --}}
                     </div>
                     {{-- Setting second column --}}
                     <div class="w-1/2 place-content-center pl-5 dark:text-gray-200 border-l border-l-gray-300 dark:border-l-gray-600 text-sm italic">
-                      @if($setting['type'] == "array")
+                      @if($setting['type'] == "array" && $alert_array_format)
                       <b>Always comma separated values!</b><br>
                       @endif
                       {{$setting['description']}}
@@ -135,7 +136,7 @@
         <x-select 
           label="{{__('Choose a group')}}"
           :options="$allGroups"
-          wire:model="group"
+          wire:model.live="group"
           :searchable="true"
           :min-items-for-search="1"
         >
@@ -150,7 +151,7 @@
         <x-select 
           label="{{__('Choose an assoc')}}"
           :options="$allAssocs"
-          wire:model="assoc"
+          wire:model.live="assoc"
           :searchable="true"
           :min-items-for-search="1"
           >
@@ -173,5 +174,4 @@
     </x-card>
   </x-modal>
 
-</section> 
-{{-- <hr class="h-px my-3 bg-gray-200 border-0 dark:bg-gray-700"> --}}
+</section>

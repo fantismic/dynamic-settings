@@ -27,13 +27,13 @@
       </div>
       {{-- Buttons --}}
       <div>
-        <button wire:click="save" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+        <button wire:click="save" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-emerald-800 dark:hover:bg-green-900 dark:focus:ring-green-900">
           {{__('Save')}}
         </button>
-        <button wire:click="showAddModalBtn" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+        <button wire:click="showAddModalBtn" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-800 dark:hover:bg-blue-900 focus:outline-none dark:focus:ring-blue-900">
           {{__('Add')}}
         </button>
-        <button wire:click="showRemoveModalBtn" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+        <button wire:click="showRemoveModalBtn" type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-rose-800 dark:hover:bg-red-900 dark:focus:ring-red-900">
           {{__('Remove')}}
         </button>
       {{-- End buttons --}}
@@ -45,7 +45,7 @@
     {{-- Body --}}
     @foreach ($groups as $name => $group)
       {{-- Card body --}}
-      <div class="rounded-md bg-white dark:bg-slate-900 dark:bg-opacity-50 shadow pb-3 mb-3">
+      <div class="rounded-md bg-white dark:bg-slate-800 dark:bg-opacity-50 shadow pb-3 mb-3">
       {{-- Card title --}}
         <div class="p-3 border-b-2 border-b-gray-300 dark:border-b-gray-600 mb-4">
           <p class="font-medium text-lg whitespace-normal text-gray-700 dark:text-gray-400">{{ucFirst($name)}}</p>
@@ -54,7 +54,7 @@
         <div class="">
           @foreach ($group as $name => $settings)
             {{-- Assoc card --}}
-            <div class="rounded-md bg-white dark:bg-gray-800 shadow m-3 pb-3 border dark:border-gray-600">
+            <div class="rounded-md bg-white dark:bg-slate-800 shadow m-3 pb-3 border dark:border-gray-600">
               {{-- Assoc card title --}}
               <div class="p-3 border-b-2 border-b-gray-300 dark:border-b-gray-600 mb-4">
                 <p class="font-medium text-base whitespace-normal text-gray-700 dark:text-gray-400">{{ucFirst($name)}}</p>
@@ -70,14 +70,14 @@
                         @case('array')
                           <div>
                             <label for="{{$setting['key']}}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{$setting['name']}}</label>
-                            <textarea wire:model="settingsArr.{{$setting['key']}}" id="{{$setting['key']}}" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"></textarea>
+                            <textarea wire:model="settingsArr.{{$setting['key']}}" id="{{$setting['key']}}" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-indigo-600 focus:border-indigo-600 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"></textarea>
                           </div>
                           @break
                         @case('string')
                         @case('int')
                           <div class="mb-3">
                             <label for="{{$setting['key']}}" class="block ml-1 mb-1 text-sm font-medium text-gray-900 dark:text-white">{{$setting['name']}}</label>
-                            <input wire:model="settingsArr.{{$setting['key']}}" type="text" id="{{$setting['key']}}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" />
+                            <input wire:model="settingsArr.{{$setting['key']}}" type="text" id="{{$setting['key']}}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-slate-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500" />
                           </div>
                           @break
                         @case('bool')
@@ -90,11 +90,12 @@
                           </div>
                           @break                               
                       @endswitch
+                      <div class="text-sm italic mt-1 dark:text-gray-400">{{$setting['key']}}</div>
                     {{-- End setting first column --}}
                     </div>
                     {{-- Setting second column --}}
                     <div class="w-1/2 place-content-center pl-5 dark:text-gray-200 border-l border-l-gray-300 dark:border-l-gray-600 text-sm italic">
-                      @if($setting['type'] == "array")
+                      @if($setting['type'] == "array" && $alert_array_format)
                       <b>Always comma separated values!</b><br>
                       @endif
                       {{$setting['description']}}

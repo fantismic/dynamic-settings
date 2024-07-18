@@ -8,13 +8,17 @@ use Illuminate\Support\Arr;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Fantismic\DynSettings\Facades\DynSettings;
+use WireUi\Traits\WireUiActions;
 
 class DynamicSettingsComponent extends Component
 {
 
+    use WireUiActions;
+
     public $wire_ui = false;
     public $layout_mode;
     public $layout_path;
+    public $alert_array_format;
 
     public $settingsArr = [];
     public $settingsAll = [];
@@ -49,6 +53,7 @@ class DynamicSettingsComponent extends Component
         
         $this->layout_mode = config('dynsettings.layout_mode', 'component');
         $this->layout_path = config('dynsettings.layout_path', 'layouts.app');
+        $this->alert_array_format = config('dynsettings.alert_array_format', true);
 
         switch (strtolower(config('dynsettings.component_blade'))) {
             case 'wireui':
@@ -68,6 +73,17 @@ class DynamicSettingsComponent extends Component
 
         $this->getData();
 
+    }
+
+    public function boot()
+    {
+        $this->withValidator(function ($validator) {
+            $validator->after(function ($validator) {
+                if (DynSettings::isKey($this->key)) {
+                    $validator->errors()->add('key', __('A key already exists with this value'));
+                }
+            });
+        });
     }
 
     public function resetFields() {
@@ -135,7 +151,12 @@ class DynamicSettingsComponent extends Component
     public function addSetting() {
         $this->validate();
 
-        if (DynSettings::add($this->key,'empty',$this->type,$this->name,$this->group,$this->assoc,$this->description)) {
+        $value = 'n/v';
+        if ($this->type == 'bool') {
+            $value = false;
+        }
+
+        if (DynSettings::add($this->key,$value,$this->type,$this->name,$this->group,$this->assoc,$this->description)) {
             $this->message = 'Setting '.$this->name. ' has been created!';
             $this->showMessage = true;
             $this->resetFields();

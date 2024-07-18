@@ -28,6 +28,16 @@ class DynSettings {
         return DynamicSetting::get($key);
     }
 
+    public function isKey($key) {
+        if (is_null($key) || empty($key)) return false;
+        
+        if ($this->getModel($key)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getModel($key=null) {
         return DynamicSetting::getModelByKey($key);
     }
