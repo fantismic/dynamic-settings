@@ -406,3 +406,8 @@ notificactions.alwayscc.emails
 > DynSettings::should('notifications.alwayscc.send')
 = false
 ```
+
+
+
+
+![Image description](https://i.postimg.cc/SxB7b1T0/fantismic-no-background.png)
