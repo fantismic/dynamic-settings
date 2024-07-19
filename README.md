@@ -79,7 +79,7 @@ use Fantismic\DynSettings\Livewire\DynamicSettingsComponent;
 Route::get('/fullpageSettings',DynamicSettingsComponent::class);
 ```
 
-## Facade
+## Usage
 
 We provide one or two methods in the facade.
 
@@ -97,6 +97,35 @@ notificactions.alwayscc.emails
 
 ### Getting data
 
+ - [Get all settings](#get-all-settings)
+ - [Get all settings as array](#get-all-settings-as-array)
+ - [Get all settings as object](#get-all-settings-as-object)
+ - [Get all settings as dotted array](#get-all-settings-as-dotted-array)
+ - [Get setting value](#get-setting-value)
+ - [Get setting data](#get-setting-data)
+ - [Get setting model](#get-setting-model)
+ - [Get all groups](#get-all-groups)
+ - [Get associations by group](#get-associations-by-group)
+ - [Get settings by group](#get-settings-by-group)
+
+### Setting / Updating data
+
+ - [Set a value](#set-a-value)
+ - [Get settings by group](#get-settings-by-group)
+ - [Update groupname](#update-groupname)
+ - [Update description](#update-description)
+ - [Update association](#update-association)
+ - [Delete setting](#delete-setting)
+ - [Delete setting by key](#delete-setting-by-key)
+ - [Update groupname](#update-groupname)
+
+### Using the settings
+
+ - [Comparing setting](#comparing-setting)
+ - [Boolean comparition](#boolean-comparition)
+
+
+### Get all settings
 **DynSettings::all()**: (array)
 
 ```
@@ -138,6 +167,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get all settings as array
 **DynSettings::getArray()**: (array)
 ```
 > DynSettings::getArray()
@@ -156,6 +186,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get all settings as object
 **DynSettings::getObject()**: (object)
 ```
 > DynSettings::getObject()
@@ -174,6 +205,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get all settings as dotted array
 **DynSettings::getDot()**: (array)
 ```
 > DynSettings::getDot()
@@ -188,6 +220,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get setting value
 **DynSettings::get(** *(string)* **$key)**: (mixed)
 ```
 > DynSettings::get('notifications.alwayscc.send')
@@ -203,6 +236,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get setting data
 **DynSettings::getKeyData(** *(string)* **$key)**: (array)
 ```
 > DynSettings::getKeyData('notifications.alwayscc.send')
@@ -219,6 +253,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get setting model
 **DynSettings::getModel(** *(string)* **$key)**: (Eloquent Model)
 ```
 > DynSettings::getModel('notifications.alwayscc.send')
@@ -237,6 +272,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get all groups
 **DynSettings::getGroups()**: (array)
 ```
 > DynSettings::getGroups()
@@ -246,6 +282,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get associations by group
 **DynSettings::getAssocs(** *(string)* **$group)**: (array)
 ```
 > DynSettings::getAssocs("Notifications")
@@ -256,6 +293,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Get settings by group
 **DynSettings::getByGroup(** *(string)* **$group)**: (array)
 ```
 > DynSettings::getByGroup("Notifications")
@@ -298,6 +336,7 @@ notificactions.alwayscc.emails
 ### Setting / Updating data
 
 
+### Set a value
 **DynSettings::set(** *(string)* **$group**, *(mixed)* **$value)**: (bool)
 
 ```
@@ -305,13 +344,7 @@ notificactions.alwayscc.emails
 = true
 ```
 
-**DynSettings::updateGroupName(** *(string)* **$oldName**, *(string)* **$newName)**: (bool)
-```
-> DynSettings::updateGroupName("Notifications", "Mailing")
-= true
-
-```
-
+### Update groupname
 **DynSettings::updateName(** *(string)* **$key**, *(string)* **$newName)**: (bool)
 ```
 > DynSettings::updateName('notifications.alwayscc.send','Always send carbon copy')
@@ -319,6 +352,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Update description
 **DynSettings::updateDescription(** *(string)* **$key**, *(string)* **$newDescription)**: (bool)
 ```
 > DynSettings::updateDescription('notifications.alwayscc.send','Set CC on every outgoing mail')
@@ -326,6 +360,7 @@ notificactions.alwayscc.emails
 
 ```
 
+### Update association
 **DynSettings::updateAssoc(** *(string)* **$key**, *(string)* **$newAssoc)**: (bool)
 ```
 > DynSettings::updateAssoc('notifications.alwayscc.send','CC')
@@ -333,12 +368,14 @@ notificactions.alwayscc.emails
 
 ```
 
+### Delete setting
 **DynSettings::delete(** *(int)* **$id**)**: (bool)
 ```
 > DynSettings::delete(3)
 = true
 ```
 
+### Delete setting by key
 **DynSettings::deleteByKey(** *(string)* **$key**)**: (bool)
 ```
 > DynSettings::deleteByKey('notifications.alwayscc.send')
@@ -346,15 +383,24 @@ notificactions.alwayscc.emails
 
 ```
 
+### Update groupname
+**DynSettings::updateGroupName(** *(string)* **$oldName**, *(string)* **$newName)**: (bool)
+```
+> DynSettings::updateGroupName("Notifications", "Mailing")
+= true
+
+```
+
 ### Using the settings
 
-
+### Comparing setting
 **DynSettings::is(** *(string)* **$key**, *(mixed)* **$value)**: (bool)
 ```
 > DynSettings::is('notifications.alwayscc.send', false)
 = true
 ```
 
+### Boolean comparition
 **DynSettings::should(** *(string)* **$key)**: (bool)
 ```
 > DynSettings::should('notifications.alwayscc.send')
