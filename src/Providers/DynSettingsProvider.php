@@ -35,7 +35,7 @@ class DynSettingsProvider extends ServiceProvider
         ], 'config');
 
         $this->publishes([
-          __DIR__.'/../lang' => $this->app->langPath('vendor/dynsettings'),
+          __DIR__.'/../resources/lang' => $this->app->langPath('vendor/dynsettings'),
         ], 'lang');
       }
     }
