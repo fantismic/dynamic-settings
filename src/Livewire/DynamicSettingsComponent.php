@@ -8,12 +8,9 @@ use Illuminate\Support\Arr;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Fantismic\DynSettings\Facades\DynSettings;
-use WireUi\Traits\WireUiActions;
 
 class DynamicSettingsComponent extends Component
 {
-
-    use WireUiActions;
 
     public $wire_ui = false;
     public $layout_mode;
@@ -30,6 +27,8 @@ class DynamicSettingsComponent extends Component
     public $showAddModal=false;
 
     public $deleteItem = "0";
+    public $isEdit = false;
+    public $editID;
 
     #[Validate('required|min:3')] 
     public $name;
@@ -42,6 +41,7 @@ class DynamicSettingsComponent extends Component
     #[Validate('required|min:3')] 
     public $assoc;
     public $description;
+    public $value;
     
     public $allTypes = [];
     public $allGroups = [];
@@ -77,13 +77,15 @@ class DynamicSettingsComponent extends Component
 
     public function boot()
     {
-        $this->withValidator(function ($validator) {
-            $validator->after(function ($validator) {
-                if (DynSettings::isKey($this->key)) {
-                    $validator->errors()->add('key', __('A key already exists with this value'));
-                }
+        if (!$this->isEdit){
+            $this->withValidator(function ($validator) {
+                $validator->after(function ($validator) {
+                    if (DynSettings::isKey($this->key)) {
+                        $validator->errors()->add('key', "A key already exists with this value");
+                    }
+                });
             });
-        });
+        }
     }
 
     public function resetFields() {
@@ -119,7 +121,7 @@ class DynamicSettingsComponent extends Component
 
     public function save() {
         DynSettings::saveArray($this->settingsArr);
-        $this->message = 'Changes saved!';
+        $this->message = __('dynsettings::dynsettings.save_message');
         $this->showMessage = true;
     }
 
@@ -127,16 +129,14 @@ class DynamicSettingsComponent extends Component
         $this->showMessage = false;
     }
 
-    public function showRemoveModalBtn() {
+    public function showRemoveModalBtn($setting) {
+        $this->deleteItem = DynSettings::getKeyData($setting);
         $this->showRemoveModal = true;
     }
 
     public function deleteSetting() {
-        if ($this->deleteItem == "0") {
-            return false;
-        }
-        if (DynSettings::deleteByKey($this->deleteItem)) {
-            $this->message = 'Setting '.$this->deleteItem. ' has been removed!';
+        if (DynSettings::deleteByKey($this->deleteItem->key)) {
+            $this->message = __('dynsettings::dynsettings.delete_message');
             $this->showMessage = true;
             $this->resetFields();
             $this->getData();
@@ -144,8 +144,27 @@ class DynamicSettingsComponent extends Component
         }
     }
 
-    public function showAddModalBtn() {
+    public function showAddModalBtn($edit=null) {
+        
+        $this->isEdit = false;
+
+        if (!is_null($edit)) {
+            $setting = DynSettings::getKeyData($edit);
+
+            $this->allAssocs = DynSettings::getAssocs($setting->group);
+
+            $this->editID = $setting->id;
+            $this->key = $setting->key;
+            $this->type = $setting->type;
+            $this->name = $setting->name;
+            $this->description = $setting->description;
+            $this->group = $setting->group;
+            $this->assoc = $setting->associate_with;
+            $this->value = $setting->value;
+            $this->isEdit = true;
+        }
         $this->showAddModal = true;
+        
     }
 
     public function addSetting() {
@@ -156,14 +175,31 @@ class DynamicSettingsComponent extends Component
             $value = false;
         }
 
-        if (DynSettings::add($this->key,$value,$this->type,$this->name,$this->group,$this->assoc,$this->description)) {
-            $this->message = 'Setting '.$this->name. ' has been created!';
+        if ($this->isEdit) {
+            if ($this->type == 'bool' && !is_bool($this->value)) {
+                $value = false;
+            } else {
+                $value = $this->value;
+            }
+            $model = DynSettings::getModelByID($this->editID);
+            $model->key = $this->key;
+            $model->name = $this->name;
+            $model->type = $this->type;
+            $model->group = $this->group;
+            $model->associate_with = $this->assoc;
+            $model->description = $this->description;
+            $model->value = $value;
+            $model->save();
+            $this->message = __('dynsettings::dynsettings.mod_setting');
             $this->showMessage = true;
-            $this->resetFields();
-            $this->getData();
             $this->closeModals();
+        } else {
+            if (DynSettings::add($this->key,$value,$this->type,$this->name,$this->group,$this->assoc,$this->description)) {
+                $this->message = __('dynsettings::dynsettings.add_setting');
+                $this->showMessage = true;
+                $this->closeModals();
+            }
         }
-        
     }
 
     public function addGroup($groupName) {
@@ -175,6 +211,7 @@ class DynamicSettingsComponent extends Component
     }
 
     public function closeModals() {
+        $this->resetValidation();
         $this->resetFields();
         $this->getData();
         $this->showRemoveModal = false;
@@ -196,7 +233,7 @@ class DynamicSettingsComponent extends Component
             }
             return view($view)->layout($this->layout_path);
         }
-
+        
         return view($view);
     }
 }

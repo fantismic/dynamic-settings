@@ -3,7 +3,7 @@
     {{-- Header --}}
     <div class="p-1 flex justify-between">
       {{-- Header title --}}
-      <div class="text-2xl dark:text-gray-200">Settings</div>
+      <div class="text-2xl dark:text-gray-200">{{ucfirst(__('dynsettings::dynsettings.settings'))}}</div>
       {{-- Header message --}}
       <div>
         @if($showMessage)
@@ -27,9 +27,8 @@
       </div>
       {{-- Buttons --}}
       <div>
-        <x-button wire:click="save" class="ml-2" light color="positive" label="{{__('Save')}}" />
-        <x-button wire:click="showAddModalBtn" class="ml-2" light color="info" label="{{__('Add')}}" />
-        <x-button wire:click="showRemoveModalBtn" class="ml-2" light color="negative" label="{{__('Remove')}}" />
+        <x-button wire:click="save" class="ml-2" light color="positive" label="{{ucfirst(__('dynsettings::dynsettings.save'))}}" />
+        <x-button wire:click="showAddModalBtn" class="ml-2" light color="info" label="{{ucfirst(__('dynsettings::dynsettings.add'))}}" />
       {{-- End buttons --}}
       </div>
     {{-- End header --}}
@@ -65,15 +64,23 @@
                           <x-toggle lg label="{{$setting['name']}}" wire:model.live="settingsArr.{{$setting['key']}}" />
                           @break                               
                       @endswitch
-                      <div class="text-sm italic mt-1">{{$setting['key']}}</div>
+                      <div class="text-sm italic font-mono mt-1">{{$setting['key']}}</div>
                     {{-- End setting first column --}}
                     </div>
                     {{-- Setting second column --}}
-                    <div class="w-1/2 place-content-center pl-5 dark:text-gray-200 border-l border-l-gray-300 dark:border-l-gray-600 text-sm italic">
-                      @if($setting['type'] == "array" && $alert_array_format)
-                      <b>Always comma separated values!</b><br>
-                      @endif
-                      {{$setting['description']}}
+                    <div class="tracking-wider w-1/2 place-content-center pl-5 dark:text-gray-200 border-l border-l-gray-300 dark:border-l-gray-600 text-sm">
+                      <div class="flex justify-between">
+                        <div class="place-content-center">
+                          @if($setting['type'] == "array" && $alert_array_format)
+                          <b>{{__('dynsettings::dynsettings.alert_array_format')}}</b><br>
+                          @endif
+                          {!! $setting['description'] !!}
+                        </div>
+                        <div class="flex">
+                          <div class="cursor-pointer" wire:click="showAddModalBtn('{{$setting['key']}}')"><?xml version="1.0" ?><svg height="20" class="text-blue-500 feather feather-edit" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                          <div class="cursor-pointer" wire:click="showRemoveModalBtn('{{$setting['key']}}')"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,300,300"><g fill="red" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M10,2l-1,1h-5v2h1v15c0,0.52222 0.19133,1.05461 0.56836,1.43164c0.37703,0.37703 0.90942,0.56836 1.43164,0.56836h10c0.52222,0 1.05461,-0.19133 1.43164,-0.56836c0.37703,-0.37703 0.56836,-0.90942 0.56836,-1.43164v-15h1v-2h-5l-1,-1zM7,5h10v15h-10zM9,7v11h2v-11zM13,7v11h2v-11z"></path></g></g></svg></div>
+                        </div>
+                      </div>
                     {{-- End setting second column --}}
                     </div>
                   {{-- Setting item 1 --}}
@@ -93,48 +100,38 @@
   
 
   {{-- Modals --}}
-
+@if ($showRemoveModal)
   <x-modal name="showRemoveModal" wire:model="showRemoveModal" width="6xl" align="center" z-10>
     <x-card class="space-y-4 space-x-3 min-w-[500px]">
-      <div class="text-xl mb-4">{{__('Delete setting')}}</div>
+      <div class="text-xl mb-4">{{ucfirst(__('dynsettings::dynsettings.delete'))}} {{__('dynsettings::dynsettings.setting')}}</div>
       <div class="flex space-x-3 mb-4">
-        <x-select 
-          label="{{__('Choose a setting to delete')}}"
-          :options="$settingsAll"
-          wire:model="deleteItem"
-          option-value="key"
-          option-label="name"
-          :searchable="true"
-          :min-items-for-search="1"
-        />
-      </div>
-
-      <div class="flex space-x-2 justify-end">
-        <div class="mt-3"><x-button negative light label="{{__('Delete')}}" wire:click="deleteSetting"></x-button></div>
-        <div class="mt-3"><x-button light label="{{__('Cancel')}}" x-on:click="close"></x-button></div>
+        <label for="setting-remove-item" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{__('dynsettings::dynsettings.delete_confirmation_message',['name' => $deleteItem->name, 'key' => $deleteItem->key])}}</label>
+      <div class="flex space-x-2 justify-end mt-3">
+        <div class="mt-3"><x-button negative light label="{{ucfirst(__('dynsettings::dynsettings.delete'))}}" wire:click="deleteSetting"></x-button></div>
+        <div class="mt-3"><x-button light label="{{ucfirst(__('dynsettings::dynsettings.cancel'))}}" x-on:click="close"></x-button></div>
       </div>
     </x-card>
   </x-modal>
-
+@endif
 
   <x-modal name="showAddModal" wire:model="showAddModal" width="6xl" align="center">
     <x-card class="min-w-[600px]">
-      <div class="text-xl mb-4">{{__('Delete setting')}}</div>
+      <div class="text-xl mb-4">{{$isEdit ? ucfirst(__('dynsettings::dynsettings.update')) : ucfirst(__('dynsettings::dynsettings.add'))}} {{__('dynsettings::dynsettings.setting')}}</div>
       <div class="space-y-3 mb-4 ">
 
-        <x-input label="{{__('Name')}}" wire:model="name" />
+        <x-input label="{{ucfirst(__('dynsettings::dynsettings.name'))}}" wire:model="name" />
 
-        <x-input label="{{__('Key')}}" wire:model="key" />
+        <x-input label="{{ucfirst(__('dynsettings::dynsettings.key'))}}" wire:model="key" />
         
         <x-select 
-          label="{{__('Choose a type')}}"
+          label="{{ucfirst(__('dynsettings::dynsettings.type'))}}"
           :options="$allTypes"
           wire:model="type"
           :searchable="true"
           :min-items-for-search="1"
         />
         <x-select 
-          label="{{__('Choose a group')}}"
+          label="{{ucfirst(__('dynsettings::dynsettings.group'))}}"
           :options="$allGroups"
           wire:model.live="group"
           :searchable="true"
@@ -149,7 +146,7 @@
           </x-slot>
         </x-select>
         <x-select 
-          label="{{__('Choose an assoc')}}"
+          label="{{ucfirst(__('dynsettings::dynsettings.assoc'))}}"
           :options="$allAssocs"
           wire:model.live="assoc"
           :searchable="true"
@@ -168,8 +165,8 @@
       </div>
 
       <div class="flex space-x-2 justify-end">
-        <div class="mt-3"><x-button info light label="{{__('Add')}}" wire:click="addSetting"></x-button></div>
-        <div class="mt-3"><x-button light label="{{__('Cancel')}}" x-on:click="close"></x-button></div>
+        <div class="mt-3"><x-button info light label="{{$isEdit ? ucfirst(__('dynsettings::dynsettings.update')) : ucfirst(__('dynsettings::dynsettings.add'))}}" wire:click="addSetting"></x-button></div>
+        <div class="mt-3"><x-button light label="{{ucfirst(__('dynsettings::dynsettings.cancel'))}}" x-on:click="close"></x-button></div>
       </div>
     </x-card>
   </x-modal>

@@ -20,6 +20,8 @@ class DynSettingsProvider extends ServiceProvider
 
       $this->loadViewsFrom(__DIR__.'/../resources/views/livewire', 'DynSettingsPackage');
 
+      $this->loadTranslationsFrom(__DIR__.'/../resources/lang','dynsettings');
+
       if ($this->app->runningInConsole()) {
         // Export the migration
         if (! class_exists('create_dynamic_settings_table')) {
@@ -31,6 +33,10 @@ class DynSettingsProvider extends ServiceProvider
         $this->publishes([
           __DIR__.'/../Config/config.php' => config_path('dynsettings.php'),
         ], 'config');
+
+        $this->publishes([
+          __DIR__.'/../lang' => $this->app->langPath('vendor/dynsettings'),
+        ], 'lang');
       }
     }
 

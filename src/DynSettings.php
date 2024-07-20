@@ -42,6 +42,10 @@ class DynSettings {
         return DynamicSetting::getModelByKey($key);
     }
 
+    public function getModelByID($id) {
+        return DynamicSetting::find($id);
+    }
+
     public function getKeyData($key) {
         return $this->toObject(DynamicSetting::getModelByKey($key));
     }

@@ -13,7 +13,7 @@ return [
     |   'blade':    always use normal blade
     |
     */
-    'component_blade' => 'auto',
+    'component_blade' => 'wireui',
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     |   'component':  Component must be added inside a blade: <livewire:DynamicSettings /> 
     |
     */
-    'layout_mode' => 'Component',
+    'layout_mode' => 'component',
 
     /*
     |--------------------------------------------------------------------------
