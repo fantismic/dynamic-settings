@@ -124,6 +124,7 @@ notificactions.alwayscc.emails
 
  - [Comparing setting](#comparing-setting)
  - [Boolean comparition](#boolean-comparition)
+ - [Array search](#array-search)
 
 
 ### Get all settings
@@ -408,6 +409,21 @@ notificactions.alwayscc.emails
 = false
 ```
 
+### Array search
+**DynSettings::has(** *(string)* **$key**, *(array)* **$value,** [(bool) strict = false]**)**: (bool)
+```
+> DynSettings::has('notifications.alwayscc.email', 'admin@app.com')
+= true
+
+> DynSettings::has('notifications.alwayscc.email', 'admin@APP.com')
+= false
+
+> DynSettings::has('notifications.alwayscc.email', 'admin@APP.com', false)
+= true
+
+> DynSettings::has('notifications.alwayscc.email', 'not-in-list-mail@app.com')
+= false
+```
 ---
 
 [![Image description](https://i.postimg.cc/SxB7b1T0/fantismic-no-background.png)](https://github.com/fantismic)

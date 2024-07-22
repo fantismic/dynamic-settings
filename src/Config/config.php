@@ -13,7 +13,7 @@ return [
     |   'blade':    always use normal blade
     |
     */
-    'component_blade' => 'wireui',
+    'component_blade' => 'auto',
 
     /*
     |--------------------------------------------------------------------------
