@@ -145,7 +145,7 @@ class DynSettings {
      * @return mixed
      */
     public function addArray(string $key, string $name, array $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'array',$group,$name,$association,$description);
+        return DynamicSetting::add($key,$value,'array',$name,$group,$association,$description);
     }
 
     /**
