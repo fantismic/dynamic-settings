@@ -70,7 +70,7 @@ class DynSettings {
      * @return mixed
      */
     public function addBool(string $key, string $name, bool $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'boolean',$group,$association,$description);
+        return DynamicSetting::add($key,$value,'boolean',$name,$group,$association,$description);
     }
     
     /**
@@ -85,7 +85,7 @@ class DynSettings {
      * @return mixed
      */
     public function addString(string $key, string $name, string $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'string',$group,$association,$description);
+        return DynamicSetting::add($key,$value,'string',$name,$group,$association,$description);
     }
         
     /**
