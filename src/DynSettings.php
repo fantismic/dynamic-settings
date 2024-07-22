@@ -100,7 +100,7 @@ class DynSettings {
      * @return mixed
      */
     public function addInt(string $key, string $name, int $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'integer',$group,$association,$description);
+        return DynamicSetting::add($key,$value,'integer',$name,$group,$association,$description);
     }
     
     /**
@@ -115,7 +115,7 @@ class DynSettings {
      * @return mixed
      */
     public function addFloat(string $key, string $name, float $value, string $group, string $association, string $description = null): mixed {
-        return $this->addDouble($key,$value,'double',$group,$association,$description);
+        return $this->addDouble($key,$value,'double',$name,$group,$association,$description);
     }
     
     /**
@@ -130,7 +130,7 @@ class DynSettings {
      * @return mixed
      */
     public function addDouble(string $key, string $name, float $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'double',$group,$association,$description);
+        return DynamicSetting::add($key,$value,'double',$name,$group,$association,$description);
     }
     
     /**
@@ -145,7 +145,7 @@ class DynSettings {
      * @return mixed
      */
     public function addArray(string $key, string $name, array $value, string $group, string $association, string $description = null): mixed {
-        return DynamicSetting::add($key,$value,'array',$group,$association,$description);
+        return DynamicSetting::add($key,$value,'array',$group,$name,$association,$description);
     }
 
     /**
