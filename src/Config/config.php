@@ -47,5 +47,28 @@ return [
     | If true, a message will be preppend to the setting description in the views
     |
     */
-    'alert_array_format' => true
+    'alert_array_format' => true,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    |   Filter arrays
+    |--------------------------------------------------------------------------
+    |
+    | When true array_filter will be excecuted on given array before store to avoid outputs like [""]
+    |
+    */
+    'filter_arrays' => true,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    |   Strict bools
+    |--------------------------------------------------------------------------
+    |
+    | When true only true|false value will be accepted to store in a bool type setting.
+    | Otherwise, accepted values will be: true | "true" | "1" | 1 | false | "false" | "0" | 0
+    |
+    */
+    'strict_bools' => false
 ];

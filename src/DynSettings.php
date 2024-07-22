@@ -4,31 +4,89 @@ namespace Fantismic\DynSettings;
 
 use Exception;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Fantismic\DynSettings\Models\DynamicSetting;
 
 class DynSettings {
 
-    private function toObject($thing) {
+    
+    /**
+     * toObject
+     *
+     * @param  mixed $thing
+     * @return mixed
+     */
+    private function toObject($thing): object|null {
         return json_decode(json_encode($thing));
     }
+    
+    
+    /**
+     * validateType
+     *
+     * @param  string $type
+     * @param  mixed $value
+     * @param  string $key
+     * @return void
+     */
+    public function validateType($type,$value,$key=''): void {
+        DynamicSetting::validateType($type,$value,$key);
+    }
 
-    public function getTypes() {
+    /**
+     * getTypes
+     *
+     * @return array
+     */
+    public function getTypes(): array {
         return DynamicSetting::getTypes();
     }
-
-    public function add($key,$value,$type,$name,$group='General',$association='Misc',$description=null) {
+    
+    /**
+     * add
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @param  string $type
+     * @param  string $name
+     * @param  string $group
+     * @param  string $association
+     * @param  string $description
+     * @return bool
+     */
+    public function add(string $key, mixed $value, string $type, string $name, string $group='General', string $association='Misc',string $description=null): bool {
         return DynamicSetting::add($key,$value,$type,$name,$group,$association,$description);
     }
+    
 
-    public function set($key,$value) {
+    /**
+     * set
+     *
+     * @param  string $key
+     * @param  mixed $value
+     * @return bool
+     */
+    public function set(string $key, mixed $value): bool {
         return DynamicSetting::set($key,$value);
     }
-
-    public function get($key) {
+    
+    /**
+     * get
+     *
+     * @param  string $key
+     * @return mixed
+     */
+    public function get(string $key): mixed {
         return DynamicSetting::get($key);
     }
-
-    public function isKey($key) {
+        
+    /**
+     * isKey
+     *
+     * @param  string $key
+     * @return bool
+     */
+    public function isKey(string $key): bool {
         if (is_null($key) || empty($key)) return false;
         
         if ($this->getModel($key)) {
@@ -37,6 +95,7 @@ class DynSettings {
             return false;
         }
     }
+    
 
     public function getModel($key=null) {
         return DynamicSetting::getModelByKey($key);
@@ -69,8 +128,8 @@ class DynSettings {
     public function should($key) {
         $data = $this->getKeyData($key);
         $keyValue = json_decode($data->value,true);
-        if ($data->type != 'bool') {
-            throw new Exception("This method only works with BOOL type settings.");
+        if ($data->type != 'boolean') {
+            throw new Exception("This method only works with boolean type settings.");
         }
 
         return $keyValue;
@@ -82,8 +141,8 @@ class DynSettings {
         $keyValue = json_decode($data->value,true);
         
         switch ($data->type) {
-            case 'bool':
-                return $value === $keyValue;
+            case 'boolean':
+                return $value == $keyValue;
                 break;
             
             case 'string':
@@ -91,6 +150,8 @@ class DynSettings {
                 break;
 
             case 'array':
+            case 'integer':
+            case 'double':
                 return $value == $keyValue;
                 break;
         }
@@ -109,6 +170,8 @@ class DynSettings {
             }
         }
 
+        
+
         foreach ($keys_array as $key) {
             $form_settings_dot[$key] = array();
             $counter=0;
@@ -118,7 +181,6 @@ class DynSettings {
                 $counter++;
             } while (isset($form_settings_dot[$key.".".$counter]));
         }
-
         
         foreach ($form_settings_dot as $key => $value) {
             if ($settings_all->where('key', $key)->first()->type == 'array') {

@@ -18,13 +18,14 @@ class DynamicSettingsComponent extends Component
     public $alert_array_format;
 
     public $settingsArr = [];
-    public $settingsAll = [];
+    public $settingsAll;
 
     public $showMessage=false;
     public $message;
 
     public $showRemoveModal=false;
     public $showAddModal=false;
+    public $showConfirmationModal=false;
 
     public $deleteItem = "0";
     public $isEdit = false;
@@ -75,18 +76,18 @@ class DynamicSettingsComponent extends Component
 
     }
 
-    public function boot()
+/*     public function boot()
     {
         if (!$this->isEdit){
             $this->withValidator(function ($validator) {
                 $validator->after(function ($validator) {
-                    if (DynSettings::isKey($this->key)) {
+                    if (!is_null($this->key) && DynSettings::isKey($this->key)) {
                         $validator->errors()->add('key', "A key already exists with this value");
                     }
                 });
             });
         }
-    }
+    } */
 
     public function resetFields() {
         $this->allTypes = [];
@@ -119,14 +120,54 @@ class DynamicSettingsComponent extends Component
         $this->allAssocs = DynSettings::getAssocs($value);
     }
 
-    public function save() {
-        DynSettings::saveArray($this->settingsArr);
-        $this->message = __('dynsettings::dynsettings.save_message');
-        $this->showMessage = true;
-    }
-
     public function dismissSaveMessage() {
         $this->showMessage = false;
+    }
+
+    public function saveSetting($key) {
+
+        $this->isEdit = true;
+
+        $setting = DynSettings::getKeyData($key);
+
+        $component_key = 'settingsArr.'.$key;
+
+        $currentValue = DynSettings::get($key);
+
+        $settingArr = Arr::dot($this->settingsArr);
+
+        if ($setting->type == 'array' && isset($settingArr[$key.".0"])) {
+            $value = array();
+            $counter=0;
+            do {
+                $value[] = trim($settingArr[$key.".".$counter]);
+                $counter++;
+            } while (isset($settingArr[$key.".".$counter]));
+        } else {
+            $value = $settingArr[$key];            
+        }
+        
+        if ($currentValue == $value) {
+            return;
+        }
+
+        $this->validate([
+            $component_key => 'required'
+        ]);
+
+        if ($setting->type == 'array') {
+            $value = explode(',',$value);
+        }
+
+        settype($value,$setting->type);
+
+        DynSettings::set($key,$value);
+
+        $this->showConfirmationModal = true;
+        $this->message = ucfirst(__('dynsettings::dynsettings.mod_value_message'));
+
+        $this->isEdit = false;
+        
     }
 
     public function showRemoveModalBtn($setting) {
@@ -168,36 +209,61 @@ class DynamicSettingsComponent extends Component
     }
 
     public function addSetting() {
+
         $this->validate();
 
-        $value = 'n/v';
-        if ($this->type == 'bool') {
-            $value = false;
+        switch ($this->type) {
+            case 'boolean':
+                $value = false;
+                break;
+            
+            case 'integer':
+                $value = 0;
+                break;
+
+            case 'double':
+                $value = 0.0;
+                break;
+            
+            case 'array':
+                $value = [];
+                break;
+
+            case 'string':
+                $value = "";
+                break;
         }
 
         if ($this->isEdit) {
-            if ($this->type == 'bool' && !is_bool($this->value)) {
-                $value = false;
-            } else {
-                $value = $this->value;
-            }
             $model = DynSettings::getModelByID($this->editID);
+
+            if($this->settingsAll->where('id','!=',$model->id)->where('key',$this->key)->count() >= 1) {
+                $this->addError('key',ucfirst(__('key_already_exists')));
+                return false;
+            }
+
             $model->key = $this->key;
             $model->name = $this->name;
             $model->type = $this->type;
             $model->group = $this->group;
             $model->associate_with = $this->assoc;
             $model->description = $this->description;
-            $model->value = $value;
+            $model->value = $this->value;
             $model->save();
-            $this->message = __('dynsettings::dynsettings.mod_setting');
-            $this->showMessage = true;
+            $this->message = __('dynsettings::dynsettings.mod_message');
             $this->closeModals();
+            $this->showConfirmationModal = true;
         } else {
+
+            if (!is_null(DynSettings::getKeyData($this->key))) {
+                $this->addError('key',ucfirst(__('key_already_exists')));
+                return false;
+            }
+
             if (DynSettings::add($this->key,$value,$this->type,$this->name,$this->group,$this->assoc,$this->description)) {
-                $this->message = __('dynsettings::dynsettings.add_setting');
-                $this->showMessage = true;
+                $this->message = __('dynsettings::dynsettings.add_message');
                 $this->closeModals();
+                $this->showConfirmationModal = true;
             }
         }
     }
@@ -216,6 +282,7 @@ class DynamicSettingsComponent extends Component
         $this->getData();
         $this->showRemoveModal = false;
         $this->showAddModal = false;
+        $this->showConfirmationModal = false;
     }
 
 

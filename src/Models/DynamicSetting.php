@@ -26,24 +26,125 @@ class DynamicSetting extends Model
         'associate_with'
     ];
 
-    CONST BOOL = 'bool';
+    CONST BOOL = 'boolean';
     CONST STRING = 'string';
     CONST ARRAY = 'array';
-    CONST INT = 'int';
-    CONST JSON = 'json';
+    CONST INT = 'integer';
+    CONST DOUBLE = 'double';
+    CONST FLOAT = 'double';
 
     public static function getTypes() {
         $oClass = new ReflectionClass(__CLASS__);
         $constants = $oClass->getConstants();
         unset($constants['CREATED_AT']);
         unset($constants['UPDATED_AT']);
+        unset($constants['FLOAT']);
         return $constants;
+    }
+
+    public static function isAcceptedBool($value) {
+        if (is_bool($value)) return true;
+
+        if (!config('dynsettings.strict_bools', false)) {
+            if (
+                $value == 1 ||
+                $value == "1" ||
+                $value == "true" ||
+                $value == 0 ||
+                $value == "0" ||
+                $value == "false"
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function convertAcceptedBool($value) {
+
+        if (is_bool($value)) return $value;
+
+        if (
+            $value == 1 ||
+            $value == "1" ||
+            strtolower($value) == "true" ||
+            $value == true
+        ) {
+            return TRUE;
+        }
+
+        if (
+            $value == 0 ||
+            $value == "0" ||
+            strtolower($value) == "false" ||
+            $value == false
+        ) {
+            return FALSE;
+        }
+    }
+
+    public static function validateType($type,$value,$key='') {
+        if ($type == Self::BOOL && !Self::isAcceptedBool($value)) {
+            throw new Exception("Key ".$key." expects a boolean value. ".ucFirst(gettype($value)). " given. Accepted values: true | 1 | '1' | 'true' | false | 0 | '0' | 'false'");
+        }
+
+        if ($type == Self::STRING && !is_string($value)) {
+            throw new Exception("Key ".$key." expects a string value. ".ucFirst(gettype($value)). " given");
+        }
+
+        if ($type == Self::INT && !is_integer($value)) {
+            throw new Exception("Key ".$key." expects an integer value. ".ucFirst(gettype($value)). " given");
+        }
+
+        if ($type == Self::DOUBLE && !is_double($value)) {
+            throw new Exception("Key ".$key." expects a double value. ".ucFirst(gettype($value)). " given");
+        }
+
+        if ($type == Self::ARRAY && !is_array($value)) {
+            throw new Exception("Key ".$key." expects an array value. ".ucFirst(gettype($value)). " given");
+        }
+
+    }
+
+    public static function convertValue2Store($type,$value) {
+        switch ($type) {
+            case Self::BOOL:
+                return json_encode(Self::convertAcceptedBool($value));
+                break;
+            
+            case Self::ARRAY:
+                if (config('dynsettings.filter_arrays', true)) {
+                    $value = array_filter($value);
+                }
+                return json_encode($value);
+            
+            case Self::STRING:
+            case Self::INT:
+            case Self::DOUBLE:
+                return $value;
+                break;
+        }
+    }
+
+    public static function convertValue2Retrieve($type,$value) {
+        switch ($type) {           
+            case Self::ARRAY:
+            case Self::BOOL:
+                return json_decode($value,true);
+            
+            case Self::STRING:
+            case Self::INT:
+            case Self::DOUBLE:
+                return $value;
+                break;
+        }
     }
 
     public static function add($key,$value,$type,$name,$group,$association,$description=null) {
 
         if (!in_array($type,Self::getTypes())) {
-            throw new Exception("Invalid type ".$type.". Expected bool, int, string, array or json");
+            throw new Exception("Invalid type ".$type.". Expected boolean, integer, string, array or double");
         }
 
         $model = Self::where('key',$key)->first();
@@ -52,15 +153,9 @@ class DynamicSetting extends Model
             throw new Exception("Key ".$key." already exists");
         }
 
-        if ($type == Self::BOOL && !is_bool($value)) {
-            throw new Exception("Key ".$key." expects boolean value. ".ucFirst(gettype($value)). " given");
-        }
+        Self::validateType($type,$value,$key);
 
-        if ($type != Self::JSON) {
-            $value = json_encode($value);
-        }
-
-        #Cache::forget('app_custom_settings');
+        $value = Self::convertValue2Store($type, $value);
 
         try {
             Self::create([
@@ -91,15 +186,9 @@ class DynamicSetting extends Model
                 throw new Exception("Key ".$key." does not exists");
             }
     
-            if ($model->type == Self::BOOL && !is_bool($value)) {
-                throw new Exception("Key ".$key." expects boolean value. ".ucFirst(gettype($value)). " given");
-            }
-    
-            if ($model->type != Self::JSON) {
-                $value = json_encode($value);
-            }
-    
-            $model->value = $value;
+            Self::validateType($model->type,$value,$key);
+            
+            $model->value = Self::convertValue2Store($model->type, $value);
             $model->save();
             return true;
         } catch (\Throwable $th) {
@@ -115,13 +204,9 @@ class DynamicSetting extends Model
         try {
             $model = Self::where('key',$key)->first();
             if (!$model) return null;
-            if ($model->type != Self::JSON) {
-                $value = json_decode($model->value);
-            } else {
-                $value = $model->value;
-            }
 
-            return $value;
+            return Self::convertValue2Retrieve($model->type,$model->value);
+
         } catch (\Throwable $th) {
             throw new Exception($th);
         }
@@ -131,21 +216,17 @@ class DynamicSetting extends Model
 
     public static function getAll() {
 
-/*         $settings = Cache::rememberForever('app_custom_settings', function () {
-            $settings = Arr::map(Self::All()->pluck('value','key')->toArray(), function ($value, $key) {
-                return json_decode($value,true);
-            });
-
-            return json_decode(json_encode(Arr::undot($settings)));
-        }); */
-
         try {
             $settings = Arr::map(Self::All()->pluck('value','key')->toArray(), function ($value, $key) {
-                return json_decode($value,true);
+                if (json_validate($value)) {
+                    return json_decode($value,true);
+                } else {
+                    return $value;
+                }
             });
     
             return json_decode(json_encode(Arr::undot($settings)));
-            return $settings;
+
         } catch (\Throwable $th) {
             throw new Exception($th);
         }
@@ -161,7 +242,11 @@ class DynamicSetting extends Model
     public static function getDot() {
         try {
             return Arr::map(DynamicSetting::All()->pluck('value','key')->toArray(), function ($value, $key) {
-                return json_decode($value,true);
+                if (json_validate($value)) {
+                    return json_decode($value,true);
+                } else {
+                    return $value;
+                }
             });
         } catch (\Throwable $th) {
             throw new Exception($th);

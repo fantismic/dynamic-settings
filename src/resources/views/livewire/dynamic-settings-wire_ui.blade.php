@@ -4,30 +4,9 @@
     <div class="p-1 flex justify-between">
       {{-- Header title --}}
       <div class="text-2xl dark:text-gray-200">{{ucfirst(__('dynsettings::dynsettings.settings'))}}</div>
-      {{-- Header message --}}
-      <div>
-        @if($showMessage)
-          <div id="alert" class="flex items-center p-1  text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
-            <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Info</span>
-            <div class="ms-3 text-sm font-medium">
-              {{ $message }}
-            </div>
-            <button wire:click="dismissSaveMessage" type="button" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700" aria-label="Close">
-              <span class="sr-only">Close</span>
-              <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-              </svg>
-            </button>
-          </div>
-        @endif
-      {{-- End header message --}}
-      </div>
+
       {{-- Buttons --}}
       <div>
-        <x-button wire:click="save" class="ml-2" light color="positive" label="{{ucfirst(__('dynsettings::dynsettings.save'))}}" />
         <x-button wire:click="showAddModalBtn" class="ml-2" light color="info" label="{{ucfirst(__('dynsettings::dynsettings.add'))}}" />
       {{-- End buttons --}}
       </div>
@@ -57,10 +36,13 @@
                             <x-textarea label="{{$setting['name']}}" wire:model="settingsArr.{{$setting['key']}}" id="{{$setting['key']}}" rows="2" />
                           @break
                         @case('string')
-                        @case('int')
-                            <x-input label="{{$setting['name']}}" wire:model="settingsArr.{{$setting['key']}}" type="text" id="{{$setting['key']}}"/>
+                          <x-input label="{{$setting['name']}}" wire:model="settingsArr.{{$setting['key']}}" type="text" id="{{$setting['key']}}"/>
                           @break
-                        @case('bool')
+                        @case('integer')
+                        @case('double')
+                            <x-input label="{{$setting['name']}}" wire:model="settingsArr.{{$setting['key']}}" type="number" id="{{$setting['key']}}"/>
+                          @break
+                        @case('boolean')
                           <x-toggle lg label="{{$setting['name']}}" wire:model.live="settingsArr.{{$setting['key']}}" />
                           @break                               
                       @endswitch
@@ -77,6 +59,7 @@
                           {!! $setting['description'] !!}
                         </div>
                         <div class="flex">
+                          <div class="cursor-pointer" wire:click="saveSetting('{{$setting['key']}}')"><svg class="w-5 h-5 mr-1 text-green-500 dark:text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 22 22"><path stroke="currentColor" stroke-linecap="round" stroke-width="1" d="M11 16h2m6.707-9.293-2.414-2.414A1 1 0 0 0 16.586 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V7.414a1 1 0 0 0-.293-.707ZM16 20v-6a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6h8ZM9 4h6v3a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V4Z"/></svg></div>
                           <div class="cursor-pointer" wire:click="showAddModalBtn('{{$setting['key']}}')"><?xml version="1.0" ?><svg height="20" class="text-blue-500 feather feather-edit" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
                           <div class="cursor-pointer" wire:click="showRemoveModalBtn('{{$setting['key']}}')"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,300,300"><g fill="red" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(10.66667,10.66667)"><path d="M10,2l-1,1h-5v2h1v15c0,0.52222 0.19133,1.05461 0.56836,1.43164c0.37703,0.37703 0.90942,0.56836 1.43164,0.56836h10c0.52222,0 1.05461,-0.19133 1.43164,-0.56836c0.37703,-0.37703 0.56836,-0.90942 0.56836,-1.43164v-15h1v-2h-5l-1,-1zM7,5h10v15h-10zM9,7v11h2v-11zM13,7v11h2v-11z"></path></g></g></svg></div>
                         </div>
@@ -170,5 +153,17 @@
       </div>
     </x-card>
   </x-modal>
+
+  @if ($showConfirmationModal)
+  <x-modal name="showConfirmationModal" wire:model="showConfirmationModal" width="6xl" align="center" z-10>
+    <x-card class="space-y-4 space-x-3 min-w-[500px]">
+      <div class="text-xl mb-4">{{$message}}</div>
+      <div class="flex space-x-2 justify-end mt-3">
+        <div class="mt-3"><x-button light info label="{{ucfirst(__('dynsettings::dynsettings.accept'))}}" x-on:click="close"></x-button></div>
+      </div>
+    </x-card>
+  </x-modal>
+@endif
+
 
 </section>
